@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Video Conference",
+  "name": "Start or Join Video Conference",
   "icons": [
     {
       "src": "favicon.ico",
