@@ -8,7 +8,7 @@ const App = () => {
   const username = new Date().getTime();
 
   const connection = new HubConnectionBuilder()
-    .withUrl("https://localhost:5001/hub")
+    .withUrl("/hub")
     .build();
 
   connection.on("messageReceived", (username: string, message: string) => {
