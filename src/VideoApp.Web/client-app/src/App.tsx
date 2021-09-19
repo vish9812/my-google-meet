@@ -1,14 +1,12 @@
 import './App.css';
 
 import React from 'react';
-
-import { HubConnectionBuilder } from "@microsoft/signalr";
 import Landing from './pages/landing/landing';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import Meeting from './pages/Meeting/meeting';
+import Meeting from './pages/meeting/meeting';
+
 
 const App = () => {
-
 
   return (
     <BrowserRouter>

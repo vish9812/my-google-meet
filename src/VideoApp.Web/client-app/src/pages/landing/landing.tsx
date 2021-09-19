@@ -7,6 +7,7 @@ import LandingFooter from "./landing-footer";
 import useFocus from "../../utils/hooks/useFocus";
 import { useHistory } from "react-router-dom";
 import Helper from "../../utils/helper";
+import Auth from "../../auth/auth";
 
 const Landing = () => {
   const [meetingIdRef, setMeetingIdRefFocus] = useFocus();
@@ -23,6 +24,8 @@ const Landing = () => {
   }
 
   const navigateToMeeting = () => {
+    Auth.promptForUserId();
+
     const meetingId = getMeetingId() || Helper.getRandomDigits();
     history.push("/meeting/" + meetingId);
   }

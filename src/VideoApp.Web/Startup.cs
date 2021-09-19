@@ -54,7 +54,7 @@ namespace VideoApp.Web
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHub<ChatHub>("/hub");
+                endpoints.MapHub<ChatHub>("/chat-hub");
 
                 endpoints.MapControllerRoute(
                     name: "default",
