@@ -1,0 +1,10 @@
+.landing {
+  padding-top: 3.5rem;
+}
+
+.landing-image {
+  height: 390px;
+  border: 25px solid white;
+  border-radius: 5px;
+  box-shadow: 1px 1px 5px grey;
+}

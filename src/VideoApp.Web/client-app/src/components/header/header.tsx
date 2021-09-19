@@ -1,3 +1,5 @@
+import "./header.css"
+
 import React from "react";
 
 interface HeaderProps {

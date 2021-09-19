@@ -1,3 +1,5 @@
+import "./landing.css";
+
 import React from "react";
 
 interface LandingProps {
@@ -18,7 +20,7 @@ const Landing = ({ meetingIdRef, onJoinMeeting, onNewMeeting }: LandingProps) =>
 
   return (
     <>
-      <main>
+      <main className="landing">
         <div className="jumbotron h-100 d-flex">
           <div className="container w-50">
             <h1 style={{ fontSize: "3rem" }}>Premium video meetings. Now free for everyone.</h1>
@@ -50,7 +52,7 @@ const Landing = ({ meetingIdRef, onJoinMeeting, onNewMeeting }: LandingProps) =>
             </ul>
           </div>
           <div className="container w-50">
-            <img src="/img/google-meet-people.jpg" alt="people" className="signin-image" />
+            <img src="/img/google-meet-people.jpg" alt="people" className="landing-image" />
           </div>
         </div>
       </main>
