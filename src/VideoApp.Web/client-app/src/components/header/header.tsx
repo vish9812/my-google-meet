@@ -2,11 +2,16 @@ import React from "react";
 
 interface HeaderProps {
   onJoinMeeting: () => void;
+  onNewMeeting: () => void;
 }
 
-const Header = ({ onJoinMeeting }: HeaderProps) => {
+const Header = ({ onJoinMeeting, onNewMeeting }: HeaderProps) => {
   const handleJoinMeetingClick = () => {
     onJoinMeeting();
+  }
+
+  const handleNewMeetingClick = () => {
+    onNewMeeting();
   }
 
   return (
@@ -38,7 +43,8 @@ const Header = ({ onJoinMeeting }: HeaderProps) => {
               </button>
             </li>
             <li className="nav-item">
-              <button className="btn btn-lg btn-info text-light font-weight bold">
+              <button className="btn btn-lg btn-info text-light font-weight bold"
+                onClick={handleNewMeetingClick}>
                 Start a meeting
               </button>
             </li>

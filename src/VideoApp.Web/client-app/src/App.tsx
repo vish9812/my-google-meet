@@ -1,15 +1,62 @@
 import './App.css';
-import logo from './logo.png';
 
-import React, { createRef, useState } from 'react';
+import React from 'react';
+
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import Header from "./components/header/header";
 import Footer from "./components/footer/footer";
 import Landing from './pages/landing/landing';
+import { Route, Switch, useHistory } from 'react-router-dom';
+import Meeting from './pages/Meeting/meeting';
+import Helper from './utils/helper';
+import useFocus from './utils/hooks/useFocus';
 
 const App = () => {
-  const [joinMeetingClickCount, setJoinMeetingClickCount] = useState(0);
-  // const inputField = createRef<HTMLInputElement>();
+  const [meetingIdRef, setMeetingIdRefFocus] = useFocus();
+  const history = useHistory();
+
+  const getMeetingId = () => meetingIdRef.current?.value || "";
+
+  const handleJoinMeeting = () => {
+    if (getMeetingId()) {
+      navigateToMeeting();
+    } else {
+      setMeetingIdRefFocus();
+    }
+  }
+
+  const navigateToMeeting = () => {
+    const meetingId = getMeetingId() || Helper.getRandomDigits();
+    history.push("/meeting/" + meetingId);
+  }
+
+  return (
+    <div className="App">
+      <Switch>
+        <Route path="/meeting/:meetingId">
+          <Meeting></Meeting>
+        </Route>
+        <Route path="/">
+          <Header
+            onJoinMeeting={handleJoinMeeting}
+            onNewMeeting={navigateToMeeting}
+          ></Header>
+          <Landing
+            meetingIdRef={meetingIdRef}
+            onJoinMeeting={handleJoinMeeting}
+            onNewMeeting={navigateToMeeting}
+          ></Landing>
+          <Footer></Footer>
+        </Route>
+      </Switch>
+    </div>
+  );
+}
+
+export default App;
+
+
+// const inputField = createRef<HTMLInputElement>();
   // const username = new Date().getTime();
 
   // const connection = new HubConnectionBuilder()
@@ -35,32 +82,3 @@ const App = () => {
   //     // .then(() => setMessage(""))
   //     .catch(err => console.error("Sending Message Failed>>>>", err));
   // }
-
-  const handleJoinMeeting = () => {
-    setJoinMeetingClickCount(joinMeetingClickCount + 1);
-  }
-
-  return (
-    <div className="App">
-      {/* <div>User: {username}</div>
-      <div>
-        <input
-          type="text"
-          defaultValue="test"
-          onKeyUp={handleMessageKeyUp}
-          ref={inputField} />
-      </div> */}
-
-      <Header
-        onJoinMeeting={handleJoinMeeting}></Header>
-
-      <Landing
-        joinMeetingClickCount={joinMeetingClickCount}></Landing>
-
-      <Footer></Footer>
-
-    </div>
-  );
-}
-
-export default App;

@@ -1,19 +1,20 @@
-import React, { createRef, useEffect } from "react";
-import useFocus from "../../utils/hooks/useFocus";
+import React from "react";
 
 interface LandingProps {
-  joinMeetingClickCount: number;
+  meetingIdRef: React.MutableRefObject<HTMLInputElement | null>;
+
+  onJoinMeeting: () => void;
+  onNewMeeting: (meetingId?: string) => void;
 }
 
-const Landing = ({ joinMeetingClickCount }: LandingProps) => {
-  const [enterCodeRef, setEnterCodeFocus] = useFocus();
-  // const enterCodeRef = createRef<HTMLInputElement>();
+const Landing = ({ meetingIdRef, onJoinMeeting, onNewMeeting }: LandingProps) => {
+  const handleJoinMeeting = () => {
+    onJoinMeeting();
+  }
 
-  useEffect(() => {
-    if (joinMeetingClickCount) {
-      setEnterCodeFocus();
-    }
-  }, [joinMeetingClickCount, setEnterCodeFocus]);
+  const handleNewMeeting = () => {
+    onNewMeeting();
+  }
 
   return (
     <>
@@ -28,7 +29,8 @@ const Landing = ({ joinMeetingClickCount }: LandingProps) => {
               <li style={{ padding: 0 }}>
                 <button
                   className="btn btn-lg text-light font-weight-bold display-center"
-                  style={{ backgroundColor: "#01796b" }}>
+                  style={{ backgroundColor: "#01796b" }}
+                  onClick={handleNewMeeting}>
                   <span className="material-icons mr-2">video_call</span>New Meeting
                 </button>
               </li>
@@ -38,10 +40,11 @@ const Landing = ({ joinMeetingClickCount }: LandingProps) => {
                   style={{ backgroundColor: "#ffffff" }}>
                   <span className="material-icons mr-2">keyboard</span>
                   <input type="text" placeholder="Enter a code" style={{ border: "none" }}
-                    ref={enterCodeRef} />
+                    ref={meetingIdRef} />
                 </button>
               </li>
-              <li className="text-dark pl-2 font-weight-bold cursor-pointer">
+              <li className="text-dark pl-2 font-weight-bold cursor-pointer"
+                onClick={handleJoinMeeting}>
                 Join
               </li>
             </ul>
