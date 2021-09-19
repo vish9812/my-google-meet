@@ -1,13 +1,11 @@
-import "./header.css"
-
 import React from "react";
 
-interface HeaderProps {
+interface LandingHeaderProps {
   onJoinMeeting: () => void;
   onNewMeeting: () => void;
 }
 
-const Header = ({ onJoinMeeting, onNewMeeting }: HeaderProps) => {
+const LandingHeader = ({ onJoinMeeting, onNewMeeting }: LandingHeaderProps) => {
   const handleJoinMeetingClick = () => {
     onJoinMeeting();
   }
@@ -57,4 +55,4 @@ const Header = ({ onJoinMeeting, onNewMeeting }: HeaderProps) => {
   )
 }
 
-export default Header;
+export default LandingHeader;

@@ -1,61 +1,46 @@
 import "./landing.css";
 
 import React from "react";
+import LandingHeader from "./landing-header";
+import LandingBody from "./landing-body";
+import LandingFooter from "./landing-footer";
+import useFocus from "../../utils/hooks/useFocus";
+import { useHistory } from "react-router-dom";
+import Helper from "../../utils/helper";
 
-interface LandingProps {
-  meetingIdRef: React.MutableRefObject<HTMLInputElement | null>;
+const Landing = () => {
+  const [meetingIdRef, setMeetingIdRefFocus] = useFocus();
+  const history = useHistory();
 
-  onJoinMeeting: () => void;
-  onNewMeeting: (meetingId?: string) => void;
-}
+  const getMeetingId = () => meetingIdRef.current?.value || "";
 
-const Landing = ({ meetingIdRef, onJoinMeeting, onNewMeeting }: LandingProps) => {
   const handleJoinMeeting = () => {
-    onJoinMeeting();
+    if (getMeetingId()) {
+      navigateToMeeting();
+    } else {
+      setMeetingIdRefFocus();
+    }
   }
 
-  const handleNewMeeting = () => {
-    onNewMeeting();
+  const navigateToMeeting = () => {
+    const meetingId = getMeetingId() || Helper.getRandomDigits();
+    history.push("/meeting/" + meetingId);
   }
 
   return (
     <>
-      <main className="landing">
-        <div className="jumbotron h-100 d-flex">
-          <div className="container w-50">
-            <h1 style={{ fontSize: "3rem" }}>Premium video meetings. Now free for everyone.</h1>
-            <p style={{ fontSize: "20px" }}>
-              We re-engineered the service we built for secure business meetings, Google Meet, to make it free and available for all.
-            </p>
-            <ul className="display-center justify-content-start">
-              <li style={{ padding: 0 }}>
-                <button
-                  className="btn btn-lg text-light font-weight-bold display-center"
-                  style={{ backgroundColor: "#01796b" }}
-                  onClick={handleNewMeeting}>
-                  <span className="material-icons mr-2">video_call</span>New Meeting
-                </button>
-              </li>
-              <li className="pl-3">
-                <button
-                  className="btn btn-lg btn-outline-secondary text-dark font-weight-bold display-center"
-                  style={{ backgroundColor: "#ffffff" }}>
-                  <span className="material-icons mr-2">keyboard</span>
-                  <input type="text" placeholder="Enter a code" style={{ border: "none" }}
-                    ref={meetingIdRef} />
-                </button>
-              </li>
-              <li className="text-dark pl-2 font-weight-bold cursor-pointer"
-                onClick={handleJoinMeeting}>
-                Join
-              </li>
-            </ul>
-          </div>
-          <div className="container w-50">
-            <img src="/img/google-meet-people.jpg" alt="people" className="landing-image" />
-          </div>
-        </div>
-      </main>
+      <div className="landing-container">
+        <LandingHeader
+          onJoinMeeting={handleJoinMeeting}
+          onNewMeeting={navigateToMeeting}
+        ></LandingHeader>
+        <LandingBody
+          meetingIdRef={meetingIdRef}
+          onJoinMeeting={handleJoinMeeting}
+          onNewMeeting={navigateToMeeting}
+        ></LandingBody>
+        <LandingFooter></LandingFooter>
+      </div>
     </>
   )
 }

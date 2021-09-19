@@ -1,6 +1,6 @@
 import React from "react";
 
-const Footer = () => {
+const LandingFooter = () => {
   return (
     <footer className="container">
       <h6>Learn more about <span className="learn-more text-info">google meet</span>.</h6>
@@ -8,4 +8,4 @@ const Footer = () => {
   )
 }
 
-export default Footer;
+export default LandingFooter;
