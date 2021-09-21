@@ -8,7 +8,7 @@ const ScreenShare = () => {
         <div>Present Now</div>
       </div>
     </>
-  )
-}
+  );
+};
 
 export default ScreenShare;

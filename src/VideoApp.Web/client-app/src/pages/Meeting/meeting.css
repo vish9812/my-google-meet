@@ -1,5 +1,5 @@
 .home-wrap {
-  background-color: rgb(31,30,30);
+  background-color: rgb(31, 30, 30);
 }
 
 .g-top {
@@ -11,7 +11,7 @@
   height: 600px;
 }
 
-.video-wrap>* {
+.video-wrap > * {
   flex: 1 1 250px;
   border: 1px solid white;
 }

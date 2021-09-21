@@ -3,7 +3,10 @@ import React from "react";
 const CallActions = () => {
   return (
     <>
-      <div className="bottom-middle d-flex justify-content-center align-items-center" style={{ height: "10vh" }}>
+      <div
+        className="bottom-middle d-flex justify-content-center align-items-center"
+        style={{ height: "10vh" }}
+      >
         <div className="mic-toggle-wrap action-icon-style display-center mr-2 cursor-pointer">
           <span className="material-icons">mic_off</span>
         </div>
@@ -15,7 +18,7 @@ const CallActions = () => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
 export default CallActions;

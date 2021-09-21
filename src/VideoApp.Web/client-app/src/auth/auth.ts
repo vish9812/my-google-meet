@@ -1,6 +1,6 @@
 export default class Auth {
   private static userId: string = "";
-  
+
   static getUserId(): string {
     return this.userId;
   }

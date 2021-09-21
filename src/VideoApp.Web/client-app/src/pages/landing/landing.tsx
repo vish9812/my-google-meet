@@ -21,14 +21,14 @@ const Landing = () => {
     } else {
       setMeetingIdRefFocus();
     }
-  }
+  };
 
   const navigateToMeeting = () => {
     Auth.promptForUserId();
 
     const meetingId = getMeetingId() || Helper.getRandomDigits();
     history.push("/meeting/" + meetingId);
-  }
+  };
 
   return (
     <>
@@ -45,7 +45,7 @@ const Landing = () => {
         <LandingFooter></LandingFooter>
       </div>
     </>
-  )
-}
+  );
+};
 
 export default Landing;

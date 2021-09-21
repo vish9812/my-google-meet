@@ -20,13 +20,20 @@ const MeetingInfo = () => {
       <div className="g-bottom bg-light m-0 d-flex justify-content-between align-items-center">
         <div className="bottom-left d-flex" style={{ height: "10vh" }}>
           <div className="display-center cursor-pointer meeting-details-button">
-            Meeting Details<span className="material-icons">keyboard_arrow_down</span>
+            Meeting Details
+            <span className="material-icons">keyboard_arrow_down</span>
           </div>
         </div>
         <CallActions></CallActions>
-        <div className="bottom-right d-flex justify-content-center align-items-center mr-3" style={{ height: "10vh" }}>
+        <div
+          className="bottom-right d-flex justify-content-center align-items-center mr-3"
+          style={{ height: "10vh" }}
+        >
           <ScreenShare></ScreenShare>
-          <div className="option-wrap cursor-pointer display-center" style={{ height: "10vh", position: "relative" }}>
+          <div
+            className="option-wrap cursor-pointer display-center"
+            style={{ height: "10vh", position: "relative" }}
+          >
             <div className="option-icon">
               <span className="material-icons">more_vert</span>
             </div>
@@ -34,7 +41,7 @@ const MeetingInfo = () => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
 export default MeetingInfo;
