@@ -37,10 +37,12 @@ namespace VideoApp.Web.Hubs
 
             await Clients.OthersInGroup(meetingId).SendAsync("AnotherUserJoined", userId);
 
-            return MeetingHubData.Connections.Values
-                .Where(tuple => tuple.meetingId == meetingId)
+            var otherUsers = MeetingHubData.Connections.Values
+                .Where(tuple => tuple.meetingId == meetingId && tuple.userId != userId)
                 .Select(tuple => tuple.userId)
                 .ToList();
+
+            return otherUsers;
         }
 
         public async Task SdpProcess(string toUserId, SdpDataModel sdpData)

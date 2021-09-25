@@ -25,19 +25,17 @@ const Meeting = () => {
   useEffect(() => {
     const startConnection = async () => {
       await SignalRHelper.start();
-      const allUsers = await MeetingHelper.userJoining(
-        Auth.getUserId(),
-        meetingId
-      );
-      console.log("got old ones>>>", allUsers);
-      setUsers(allUsers);
+      const userId = Auth.getUserId();
+      const otherUsers = await MeetingHelper.userJoining(userId, meetingId);
+      console.log("got old ones>>>", otherUsers);
+      setUsers([userId, ...otherUsers]);
     };
 
-    const handleAnotherUserJoined = (userId: string) => {
-      console.log("got new one>>>", userId);
+    const handleAnotherUserJoined = (anotherUserId: string) => {
+      console.log("got new one>>>", anotherUserId);
       console.log("combining with oldies>>>>", usersRef.current);
 
-      setUsers([...usersRef.current, userId]);
+      setUsers([...usersRef.current, anotherUserId]);
     };
 
     const handleUserLeft = (userId: string) => {

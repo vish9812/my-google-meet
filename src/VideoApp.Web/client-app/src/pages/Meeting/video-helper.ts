@@ -29,13 +29,16 @@ export default class VideoHelper extends SignalRHelper {
   }
 
   static subscribeToEvents(): void {
-    this.connection.on(this.eventNames.sdpProcess, (fromUserId, sdpData) => {
-      console.log(
-        `got sdpProcess from: ${fromUserId}, with message: `,
-        sdpData
-      );
+    this.connection.on(
+      this.eventNames.sdpProcess,
+      async (fromUserId, sdpData) => {
+        console.log(
+          `got sdpProcess from: ${fromUserId}, with message: `,
+          sdpData
+        );
 
-      WebRtc.processSdpData(sdpData, fromUserId);
-    });
+        await WebRtc.processSdpData(sdpData, fromUserId);
+      }
+    );
   }
 }

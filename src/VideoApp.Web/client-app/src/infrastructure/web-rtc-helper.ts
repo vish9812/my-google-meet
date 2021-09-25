@@ -38,7 +38,7 @@ export default class WebRtc {
 
     let connection = this.peersConnections.get(fromUserId);
     if (!connection) {
-      await this.setNewConnection(fromUserId);
+      this.setNewConnection(fromUserId);
       connection = this.peersConnections.get(fromUserId)!;
     }
 
@@ -54,11 +54,11 @@ export default class WebRtc {
     }
   }
 
-  static async setNewConnection(
+  static setNewConnection(
     userId: string
     // videoTrackHandler: MediaTrackHandler,
     // audioTrackHandler: MediaTrackHandler
-  ): Promise<RTCPeerConnection> {
+  ): RTCPeerConnection {
     const connection = new RTCPeerConnection(this.config);
 
     connection.onnegotiationneeded = async (event) =>

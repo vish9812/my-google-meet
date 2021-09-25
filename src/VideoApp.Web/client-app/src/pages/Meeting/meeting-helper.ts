@@ -1,4 +1,5 @@
 import SignalRHelper from "../../infrastructure/signalr-helper";
+import WebRtc from "../../infrastructure/web-rtc-helper";
 import MeetingEventsCallbacks from "./models/meeting-events-callbacks";
 
 export default class MeetingHelper extends SignalRHelper {
@@ -12,14 +13,16 @@ export default class MeetingHelper extends SignalRHelper {
     meetingId: string
   ): Promise<string[]> {
     try {
-      const users: string[] = await this.connection.invoke(
+      const otherUsers: string[] = await this.connection.invoke(
         "userJoining",
         userId,
         meetingId
       );
-      console.log("users>>>>", users);
+      console.log("otherUsers>>>>", otherUsers);
 
-      return users;
+      otherUsers.forEach((u) => WebRtc.setNewConnection(u));
+
+      return otherUsers;
     } catch (err) {
       console.error("Failed: User Joined>>>", err);
       return [];
@@ -35,10 +38,10 @@ export default class MeetingHelper extends SignalRHelper {
     onAnotherUserJoined,
     onUserLeft,
   }: MeetingEventsCallbacks): void {
-    this.connection.on("anotherUserJoined", (userId, testData) => {
-      console.log("Successfully joined>>>", userId);
-      console.log("Successfully joined TestData>>>", testData);
-      onAnotherUserJoined(userId);
+    this.connection.on("anotherUserJoined", (anotherUserId) => {
+      console.log("Successfully joined>>>", anotherUserId);
+      WebRtc.setNewConnection(anotherUserId);
+      onAnotherUserJoined(anotherUserId);
     });
 
     this.connection.on("userLeft", (userId) => {
