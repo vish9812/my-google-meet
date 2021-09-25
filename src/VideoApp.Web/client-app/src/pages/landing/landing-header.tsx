@@ -22,7 +22,7 @@ const LandingHeader = ({ onJoinMeeting, onNewMeeting }: LandingHeaderProps) => {
           Video Conference
         </a>
         <div className="collapse navbar-collapse">
-          <ul className="navbar-nav mr-auto">
+          {/* <ul className="navbar-nav mr-auto">
             <li className="nav-item">
               <a href="#" className="nav-link">
                 At a glance
@@ -38,13 +38,13 @@ const LandingHeader = ({ onJoinMeeting, onNewMeeting }: LandingHeaderProps) => {
                 Plan and Price
               </a>
             </li>
-          </ul>
+          </ul> */}
           <ul className="navbar-nav mr-0">
-            <li className="nav-item sign-in display-center">
+            {/* <li className="nav-item sign-in display-center">
               <a href="#" className="nav-link">
                 Sign in
               </a>
-            </li>
+            </li> */}
             <li className="nav-item">
               <button
                 className="btn btn-outline-secondary btn-lg text-info font-weight-bold"

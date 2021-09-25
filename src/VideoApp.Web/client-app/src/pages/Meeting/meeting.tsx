@@ -1,12 +1,13 @@
 import "./meeting.css";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import MeetingVideo from "./meeting-video/meeting-video";
 import MeetingInfo from "./meeting-info/meeting-info";
 import Auth from "../../auth/auth";
 import SignalRHelper from "../../infrastructure/signalr-helper";
 import MeetingHelper from "./meeting-helper";
+import VideoHelper from "./video-helper";
 
 const Meeting = () => {
   Auth.promptForUserId();
@@ -15,6 +16,12 @@ const Meeting = () => {
 
   const [users, setUsers] = useState<string[]>([]);
 
+  const usersRef = useRef<string[]>([]);
+  usersRef.current = users;
+
+  var a = 10;
+  console.log(a);
+
   useEffect(() => {
     const startConnection = async () => {
       await SignalRHelper.start();
@@ -22,20 +29,40 @@ const Meeting = () => {
         Auth.getUserId(),
         meetingId
       );
+      console.log("got old ones>>>", allUsers);
       setUsers(allUsers);
     };
 
+    const handleAnotherUserJoined = (userId: string) => {
+      console.log("got new one>>>", userId);
+      console.log("combining with oldies>>>>", usersRef.current);
+
+      setUsers([...usersRef.current, userId]);
+    };
+
+    const handleUserLeft = (userId: string) => {
+      console.log("oldie left>>>", userId);
+      const remainingUsers = usersRef.current.filter((u) => u !== userId);
+      setUsers(remainingUsers);
+    };
+
     SignalRHelper.initConnection();
-    MeetingHelper.subscribeToMeetingEvents({
-      onUserJoined: handleUserJoined,
+    MeetingHelper.subscribeToEvents({
+      onAnotherUserJoined: handleAnotherUserJoined,
+      onUserLeft: handleUserLeft,
     });
+    VideoHelper.subscribeToEvents();
+    VideoHelper.init();
 
     startConnection();
-  }, [meetingId]);
 
-  const handleUserJoined = (userId: string) => {
-    setUsers([...users, userId]);
-  };
+    return () => {
+      console.info("Cleaning up in useEffect>>>");
+      MeetingHelper.unSubscribeFromEvents();
+      VideoHelper.unSubscribeFromEvents();
+      (async () => await MeetingHelper.stop())();
+    };
+  }, [meetingId]);
 
   return (
     <>

@@ -39,7 +39,18 @@ export default class SignalRHelper {
         `Error in starting connection: ${this.connection.connectionId}`,
         err
       );
-      setTimeout(this.start, 5000);
+    }
+  }
+
+  static async stop(): Promise<void> {
+    const connectionId = this.connection.connectionId;
+    try {
+      if (this.connection.state !== HubConnectionState.Disconnected) {
+        console.info(`SignalR Stopping: ${connectionId}.`);
+        await this.connection.stop();
+      }
+    } catch (err) {
+      console.warn(`Error in stopping connection: ${connectionId}`, err);
     }
   }
 

@@ -2,6 +2,11 @@ import SignalRHelper from "../../infrastructure/signalr-helper";
 import MeetingEventsCallbacks from "./models/meeting-events-callbacks";
 
 export default class MeetingHelper extends SignalRHelper {
+  private static eventNames = {
+    anotherUserJoined: "anotherUserJoined",
+    userLeft: "userLeft",
+  };
+
   static async userJoining(
     userId: string,
     meetingId: string
@@ -21,20 +26,24 @@ export default class MeetingHelper extends SignalRHelper {
     }
   }
 
-  static subscribeToMeetingEvents({
-    onUserJoined,
+  static unSubscribeFromEvents(): void {
+    this.connection.off(this.eventNames.anotherUserJoined);
+    this.connection.off(this.eventNames.userLeft);
+  }
+
+  static subscribeToEvents({
+    onAnotherUserJoined,
+    onUserLeft,
   }: MeetingEventsCallbacks): void {
-    this.connection.on("userJoined", (userId) => {
+    this.connection.on("anotherUserJoined", (userId, testData) => {
       console.log("Successfully joined>>>", userId);
-      onUserJoined(userId);
+      console.log("Successfully joined TestData>>>", testData);
+      onAnotherUserJoined(userId);
     });
 
-    this.connection.on("userLeft", (msg) => {
-      console.log("Successfully left>>>", msg);
-    });
-
-    this.connection.on("userGotDisconnected", (msg) => {
-      console.log("Probably, mistakenly, userGotDisconnected>>>", msg);
+    this.connection.on("userLeft", (userId) => {
+      console.log("Successfully left>>>", userId);
+      onUserLeft(userId);
     });
   }
 }

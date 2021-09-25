@@ -10,7 +10,7 @@ const MeetingInfo = () => {
           <div className="top-left-participant-icon">
             <span className="material-icons">people</span>
           </div>
-          <div className="top-left-participant-count"></div>
+          <div className="top-left-participant-count">2</div>
         </div>
         <div className="top-left-chat-wrap pt-2 cursor-pointer">
           <span className="material-icons">message</span>

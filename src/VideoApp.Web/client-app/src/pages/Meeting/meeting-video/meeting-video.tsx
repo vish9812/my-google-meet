@@ -1,7 +1,6 @@
 import React, { FC } from "react";
 import Auth from "../../../auth/auth";
-import LoggedInUser from "../users/logged-in-user";
-import OtherUser from "../users/other-user";
+import UserVideo from "./user-video";
 
 interface MeetingVideoProps {
   users: string[];
@@ -17,15 +16,12 @@ const MeetingVideo: FC<MeetingVideoProps> = ({ users }) => {
   return (
     <>
       <div className="top-remote-video-show-wrap d-flex">
-        <div className="w-75 d-none">
+        <div className="w-75">
           <div className="call-wrap" style={{ backgroundColor: "black" }}>
-            <div
-              className="video-wrap"
-              style={{ display: "flex", flexWrap: "wrap" }}
-            >
-              <LoggedInUser userId={loggedInUser}></LoggedInUser>
+            <div className="video-wrap">
+              <UserVideo userId={loggedInUser}></UserVideo>
               {otherUsers.map((u) => (
-                <OtherUser key={u} userId={u}></OtherUser>
+                <UserVideo key={u} userId={u}></UserVideo>
               ))}
             </div>
           </div>

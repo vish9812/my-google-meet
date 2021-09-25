@@ -9,6 +9,13 @@ using VideoApp.Web.Data;
 
 namespace VideoApp.Web.Hubs
 {
+    public class SdpDataModel
+    {
+        public object Offer { get; set; }
+        public object Answer { get; set; }
+        public object Icecandidate { get; set; }
+    }
+
     public class MeetingHub : Hub
     {
         private readonly ILogger<MeetingHub> logger;
@@ -26,10 +33,23 @@ namespace VideoApp.Web.Hubs
             logger.LogInformation(log);
 
             MeetingHubData.Connections.TryAdd(Context.ConnectionId, (meetingId, userId));
+            MeetingHubData.Users.TryAdd(userId, (meetingId, Context.ConnectionId));
 
-            await Clients.OthersInGroup(meetingId).SendAsync("UserJoined", userId);
+            await Clients.OthersInGroup(meetingId).SendAsync("AnotherUserJoined", userId);
 
-            return MeetingHubData.Connections.Values.Select(tuple => tuple.userId).ToList();
+            return MeetingHubData.Connections.Values
+                .Where(tuple => tuple.meetingId == meetingId)
+                .Select(tuple => tuple.userId)
+                .ToList();
+        }
+
+        public async Task SdpProcess(string toUserId, SdpDataModel sdpData)
+        {
+            var toConnection = MeetingHubData.Users[toUserId].connectionId;
+            var toClient = Clients.Client(toConnection);
+
+            var fromUserId = toUserId;
+            await toClient.SendAsync("sdpProcess", fromUserId, sdpData);
         }
 
         public override async Task OnConnectedAsync()
@@ -47,21 +67,20 @@ namespace VideoApp.Web.Hubs
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, meetingId);
 
             MeetingHubData.Connections.Remove(Context.ConnectionId);
+            MeetingHubData.Users.Remove(userId);
 
-            if (exception != null)
-            {
-                var log = $"{userId} got disconnected from meeting {meetingId}";
-                logger.LogError(exception, log);
-
-                await Clients.OthersInGroup(meetingId).SendAsync("UserGotDisconnected", log);
-            }
-            else
+            if (exception == null)
             {
                 var log = $"{userId} has left the group {meetingId}.";
                 logger.LogInformation(log);
-
-                await Clients.OthersInGroup(meetingId).SendAsync("UserLeft", log);
             }
+            else
+            {
+                var log = $"{userId} got disconnected from meeting {meetingId}";
+                logger.LogError(exception, log);
+            }
+
+            await Clients.OthersInGroup(meetingId).SendAsync("UserLeft", userId);
 
             await base.OnDisconnectedAsync(exception);
         }

@@ -8,6 +8,8 @@
 }
 
 .video-wrap {
+  display: flex;
+  flex-wrap: wrap;
   height: 600px;
 }
 

@@ -1,3 +1,4 @@
 export default interface MeetingEventsCallbacks {
-  onUserJoined: (userId: string) => void;
+  onAnotherUserJoined: (userId: string) => void;
+  onUserLeft: (userId: string) => void;
 }
