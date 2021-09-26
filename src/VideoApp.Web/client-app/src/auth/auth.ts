@@ -1,3 +1,5 @@
+import Helper from "../utils/helper";
+
 export default class Auth {
   private static userId: string = "";
 
@@ -6,7 +8,7 @@ export default class Auth {
   }
 
   static setUserId(userId: string): void {
-    this.userId = userId;
+    this.userId = userId || Helper.getRandomDigits(5);
   }
 
   static promptForUserId(): void {

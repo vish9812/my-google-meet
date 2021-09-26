@@ -1,3 +1,4 @@
+import UIHelper from "../../utils/ui-helper";
 import MediaRtcHelper from "./media-rtc-helper";
 import SdpDataModel from "./sdp-data-model";
 
@@ -21,7 +22,6 @@ export default class WebRtcHelper {
   };
 
   protected static peersConnections = new Map<string, RTCPeerConnection>();
-  protected static rtpSenders = new Map<string, RTCRtpSender>();
   private static remoteVideoStreams = new Map<string, MediaStream>();
   private static remoteAudioStreams = new Map<string, MediaStream>();
   private static sendSdpToServer: SendSdpToServerFunc;
@@ -86,7 +86,8 @@ export default class WebRtcHelper {
 
     this.peersConnections.set(userId, connection);
 
-    MediaRtcHelper.updateMediaSenders();
+    MediaRtcHelper.updateMediaSenders(true);
+    MediaRtcHelper.updateMediaSenders(false);
 
     return connection;
   }
@@ -136,21 +137,13 @@ export default class WebRtcHelper {
 
       videoStream.addTrack(event.track);
       // videoTrackHandler(userId, videoStream);
-      const videoHtml = document.getElementById(
-        `video_${userId}`
-      ) as HTMLVideoElement;
-      videoHtml.srcObject = videoStream;
-      videoHtml.load();
+      UIHelper.setVideoSrc(userId, videoStream);
     } else if (event.track.kind === "audio") {
       audioStream.getAudioTracks().forEach((t) => audioStream!.removeTrack(t));
 
       audioStream.addTrack(event.track);
       // audioTrackHandler(userId, audioStream);
-      const audioHtml = document.getElementById(
-        `audio_${userId}`
-      ) as HTMLAudioElement;
-      audioHtml.srcObject = audioStream;
-      audioHtml.load();
+      UIHelper.setAudioSrc(userId, audioStream);
     }
   }
 }

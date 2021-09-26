@@ -1,26 +1,42 @@
 import Auth from "../../auth/auth";
 import VideoState from "../../utils/common/video-states";
+import UIHelper from "../../utils/ui-helper";
 import WebRtcHelper from "./web-rtc-helper";
 
 export default class MediaRtcHelper extends WebRtcHelper {
-  private static audioEnabled: boolean;
   private static videoState: VideoState;
-  private static mediaStreamTrack: MediaStreamTrack;
+  private static videoStreamTrack: MediaStreamTrack | null;
+  private static rtpVideoSenders = new Map<string, RTCRtpSender>();
+  private static audioStreamTrack: MediaStreamTrack | null;
+  private static rtpAudioSenders = new Map<string, RTCRtpSender>();
 
-  static toggleAudio(enable: boolean) {
-    this.audioEnabled = enable;
-  }
+  static async processAudio(isMuted: boolean) {
+    if (isMuted) {
+      this.removeMediaSenders(this.rtpAudioSenders);
+    } else {
+      if (!this.audioStreamTrack) {
+        const audioStream = await navigator.mediaDevices.getUserMedia({
+          video: false,
+          audio: true,
+        });
 
-  static isAudioEnabled() {
-    return this.audioEnabled;
+        if (audioStream && audioStream.getAudioTracks().length) {
+          this.audioStreamTrack = audioStream.getAudioTracks()[0];
+        }
+      }
+
+      this.updateMediaSenders(true);
+    }
   }
 
   static async processVideo(newVideoState: VideoState) {
-    let mediaStream: MediaStream | null = null;
+    this.videoState = newVideoState;
+
+    let videoStream: MediaStream | null = null;
 
     try {
       if (newVideoState === VideoState.Camera) {
-        mediaStream = await navigator.mediaDevices.getUserMedia({
+        videoStream = await navigator.mediaDevices.getUserMedia({
           video: {
             width: 1920,
             height: 1080,
@@ -28,25 +44,25 @@ export default class MediaRtcHelper extends WebRtcHelper {
           audio: false,
         });
       } else if (newVideoState === VideoState.ScreenShare) {
-        mediaStream = await navigator.mediaDevices.getDisplayMedia({
+        videoStream = await navigator.mediaDevices.getDisplayMedia({
           video: {
             width: 1920,
             height: 1080,
           },
           audio: false,
         });
+      } else {
+        this.removeVideoStream();
       }
 
-      this.videoState = newVideoState;
-
-      if (mediaStream && mediaStream.getVideoTracks().length) {
-        this.mediaStreamTrack = mediaStream.getVideoTracks()[0];
-        if (this.mediaStreamTrack) {
-          const myVideoHtml = document.getElementById(
-            `video_${Auth.getUserId()}`
-          ) as HTMLVideoElement;
-          myVideoHtml.srcObject = new MediaStream([this.mediaStreamTrack]);
-          this.updateMediaSenders();
+      if (videoStream && videoStream.getVideoTracks().length) {
+        this.videoStreamTrack = videoStream.getVideoTracks()[0];
+        if (this.videoStreamTrack) {
+          UIHelper.setVideoSrc(
+            Auth.getUserId(),
+            new MediaStream([this.videoStreamTrack])
+          );
+          this.updateMediaSenders(false);
         }
       }
     } catch (err) {
@@ -54,10 +70,21 @@ export default class MediaRtcHelper extends WebRtcHelper {
     }
   }
 
-  static updateMediaSenders() {
-    console.log(`Called updateMediaSenders>>>>`);
+  static updateMediaSenders(isAudio: boolean) {
+    console.log(`Called updateMediaSenders with isAudio`, isAudio);
 
-    if (this.videoState !== VideoState.None && this.mediaStreamTrack) {
+    let mediaStreamTrack: MediaStreamTrack | null = null;
+    let rtpSenders: Map<string, RTCRtpSender> = new Map<string, RTCRtpSender>();
+
+    if (isAudio) {
+      mediaStreamTrack = this.audioStreamTrack;
+      rtpSenders = this.rtpAudioSenders;
+    } else if (this.videoState !== VideoState.None && this.videoStreamTrack) {
+      mediaStreamTrack = this.videoStreamTrack;
+      rtpSenders = this.rtpVideoSenders;
+    }
+
+    if (mediaStreamTrack) {
       this.peersConnections.forEach((connection, userId) => {
         console.log(`Checking rtc status for user: ${userId}`);
 
@@ -66,22 +93,40 @@ export default class MediaRtcHelper extends WebRtcHelper {
             `Checked rtc status for user: ${userId}, status: ${connection.connectionState}`
           );
 
-          const rtpSender = this.rtpSenders.get(userId);
+          const rtpSender = rtpSenders.get(userId);
 
           console.log(`Rtp Sender for user: ${userId}, rtp: `, rtpSender);
 
           if (rtpSender && rtpSender.track) {
             console.log(`Rtp replacing track for user: ${userId}`);
-            rtpSender.replaceTrack(this.mediaStreamTrack);
+            rtpSender.replaceTrack(mediaStreamTrack);
           } else {
             console.log(`Rtp adding track for user: ${userId}`);
-            this.rtpSenders.set(
-              userId,
-              connection.addTrack(this.mediaStreamTrack)
-            );
+            rtpSenders.set(userId, connection.addTrack(mediaStreamTrack!));
           }
         }
       });
     }
+  }
+
+  private static removeVideoStream() {
+    if (this.videoStreamTrack) {
+      this.videoStreamTrack.stop();
+      this.videoStreamTrack = null;
+
+      UIHelper.setVideoSrc(Auth.getUserId(), null);
+
+      this.removeMediaSenders(this.rtpVideoSenders);
+    }
+  }
+
+  private static removeMediaSenders(rtpSenders: Map<string, RTCRtpSender>) {
+    this.peersConnections.forEach((connection, userId) => {
+      const rtpSender = rtpSenders.get(userId);
+      if (rtpSender && this.connectionStatus(connection)) {
+        connection.removeTrack(rtpSender);
+        rtpSenders.delete(userId);
+      }
+    });
   }
 }

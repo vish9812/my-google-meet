@@ -13,16 +13,16 @@ export default class MeetingSignalR extends SignalRHelper {
     meetingId: string
   ): Promise<string[]> {
     try {
-      const otherUsers: string[] = await this.connection.invoke(
+      const othersInMeeting: string[] = await this.connection.invoke(
         "userJoining",
         userId,
         meetingId
       );
-      console.log("otherUsers>>>>", otherUsers);
+      console.log("otherUsers>>>>", othersInMeeting);
 
-      otherUsers.forEach((u) => WebRtcHelper.setNewConnection(u));
+      othersInMeeting.forEach((u) => WebRtcHelper.setNewConnection(u));
 
-      return otherUsers;
+      return othersInMeeting;
     } catch (err) {
       console.error("Failed: User Joined>>>", err);
       return [];

@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import WebRtcHelper from "../../../infrastructure/web-rtc/web-rtc-helper";
+import MediaRtcHelper from "../../../infrastructure/web-rtc/media-rtc-helper";
 import VideoState from "../../../utils/common/video-states";
 
 interface CallActionsProps {
@@ -15,12 +15,8 @@ const CallActions: FC<CallActionsProps> = ({
   const [isCamOff, setIsCamOff] = useState(true);
 
   const handleMicToggle = async () => {
-    // if (!WebRtc.isAudioEnabled()) {
-    //   await WebRtc.loadAudio();
-    // }
-    // WebRtc.toggleAudio(isMute);
-    // WebRtc.updateMediaSenders(isMute);
-    // setIsMute(!isMute);
+    MediaRtcHelper.processAudio(!isMute);
+    setIsMute(!isMute);
   };
 
   const handleVideoToggle = () => {

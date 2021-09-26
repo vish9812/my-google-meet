@@ -22,10 +22,16 @@ const Meeting = () => {
   useEffect(() => {
     const startConnection = async () => {
       await SignalRHelper.start();
+
       const userId = Auth.getUserId();
-      const otherUsers = await MeetingSignalR.userJoining(userId, meetingId);
-      console.log("got old ones>>>", otherUsers);
-      setUsers([userId, ...otherUsers]);
+      const othersInMeeting = await MeetingSignalR.userJoining(
+        userId,
+        meetingId
+      );
+
+      console.log("got old ones>>>", othersInMeeting);
+
+      setUsers([userId, ...othersInMeeting]);
     };
 
     const handleAnotherUserJoined = (anotherUserId: string) => {

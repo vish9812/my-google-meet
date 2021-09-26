@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef } from "react";
+import { FC } from "react";
 import Auth from "../../../auth/auth";
 
 interface UserVideoProps {
@@ -6,16 +6,7 @@ interface UserVideoProps {
 }
 
 const UserVideo: FC<UserVideoProps> = ({ userId }) => {
-  const loggedInUserId = Auth.getUserId();
-  const isLoggedInUser = loggedInUserId === userId;
-
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  // useEffect(() => {
-  //   if (videoStream && videoRef?.current) {
-  //     videoRef.current.srcObject = videoStream;
-  //   }
-  // }, [videoStream]);
+  const isLoggedInUser = Auth.getUserId() === userId;
 
   return (
     <div className="userbox display-center flex-column">
@@ -23,9 +14,9 @@ const UserVideo: FC<UserVideoProps> = ({ userId }) => {
         {`${userId} ${isLoggedInUser ? "(Me)" : ""}`}
       </h2>
       <div className="display-center">
-        <video id={`video_${userId}`} autoPlay muted ref={videoRef}></video>
+        <video id={`video_${userId}`} playsInline autoPlay muted></video>
         {!isLoggedInUser && (
-          <audio id={`audio_${userId}`} autoPlay muted controls></audio>
+          <audio id={`audio_${userId}`} playsInline autoPlay controls></audio>
         )}
       </div>
     </div>
