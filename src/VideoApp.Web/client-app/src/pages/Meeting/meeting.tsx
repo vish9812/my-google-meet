@@ -2,12 +2,12 @@ import "./meeting.css";
 
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import MeetingVideo from "./meeting-video/meeting-video";
+import UsersVideosList from "./meeting-video/users-videos-list";
 import MeetingInfo from "./meeting-info/meeting-info";
 import Auth from "../../auth/auth";
-import SignalRHelper from "../../infrastructure/signalr-helper";
-import MeetingHelper from "./meeting-helper";
-import VideoHelper from "./video-helper";
+import SignalRHelper from "../../infrastructure/signalr/signalr-helper";
+import VideoSignalR from "../../infrastructure/signalr/video-signalr";
+import MeetingSignalR from "../../infrastructure/signalr/meeting-signalr";
 
 const Meeting = () => {
   Auth.promptForUserId();
@@ -19,14 +19,11 @@ const Meeting = () => {
   const usersRef = useRef<string[]>([]);
   usersRef.current = users;
 
-  var a = 10;
-  console.log(a);
-
   useEffect(() => {
     const startConnection = async () => {
       await SignalRHelper.start();
       const userId = Auth.getUserId();
-      const otherUsers = await MeetingHelper.userJoining(userId, meetingId);
+      const otherUsers = await MeetingSignalR.userJoining(userId, meetingId);
       console.log("got old ones>>>", otherUsers);
       setUsers([userId, ...otherUsers]);
     };
@@ -45,28 +42,29 @@ const Meeting = () => {
     };
 
     SignalRHelper.initConnection();
-    MeetingHelper.subscribeToEvents({
+    MeetingSignalR.subscribeToEvents({
       onAnotherUserJoined: handleAnotherUserJoined,
       onUserLeft: handleUserLeft,
     });
-    VideoHelper.subscribeToEvents();
-    VideoHelper.init();
+    VideoSignalR.subscribeToEvents();
+    VideoSignalR.init();
 
     startConnection();
 
     return () => {
       console.info("Cleaning up in useEffect>>>");
-      MeetingHelper.unSubscribeFromEvents();
-      VideoHelper.unSubscribeFromEvents();
-      (async () => await MeetingHelper.stop())();
+      MeetingSignalR.unSubscribeFromEvents();
+      VideoSignalR.unSubscribeFromEvents();
+      (async () => await MeetingSignalR.stop())();
     };
   }, [meetingId]);
 
   return (
     <>
       <main className="d-flex flex-column home-wrap">
-        <div className="g-top text-light"></div>
-        <MeetingVideo users={users}></MeetingVideo>
+        <div className="g-top text-light">
+          <UsersVideosList users={users}></UsersVideosList>
+        </div>
         <MeetingInfo></MeetingInfo>
       </main>
     </>

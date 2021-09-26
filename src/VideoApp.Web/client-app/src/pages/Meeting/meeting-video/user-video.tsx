@@ -20,7 +20,7 @@ const UserVideo: FC<UserVideoProps> = ({ userId }) => {
   return (
     <div className="userbox display-center flex-column">
       <h2 className="display-center" style={{ fontSize: "14px" }}>
-        {userId}
+        {`${userId} ${isLoggedInUser ? "(Me)" : ""}`}
       </h2>
       <div className="display-center">
         <video id={`video_${userId}`} autoPlay muted ref={videoRef}></video>

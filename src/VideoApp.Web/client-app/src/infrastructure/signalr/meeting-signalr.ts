@@ -1,8 +1,8 @@
-import SignalRHelper from "../../infrastructure/signalr-helper";
-import WebRtc from "../../infrastructure/web-rtc-helper";
-import MeetingEventsCallbacks from "./models/meeting-events-callbacks";
+import SignalRHelper from "../../infrastructure/signalr/signalr-helper";
+import MeetingEventsCallbacks from "../../pages/meeting/models/meeting-events-callbacks";
+import WebRtcHelper from "../web-rtc/web-rtc-helper";
 
-export default class MeetingHelper extends SignalRHelper {
+export default class MeetingSignalR extends SignalRHelper {
   private static eventNames = {
     anotherUserJoined: "anotherUserJoined",
     userLeft: "userLeft",
@@ -20,7 +20,7 @@ export default class MeetingHelper extends SignalRHelper {
       );
       console.log("otherUsers>>>>", otherUsers);
 
-      otherUsers.forEach((u) => WebRtc.setNewConnection(u));
+      otherUsers.forEach((u) => WebRtcHelper.setNewConnection(u));
 
       return otherUsers;
     } catch (err) {
@@ -40,7 +40,7 @@ export default class MeetingHelper extends SignalRHelper {
   }: MeetingEventsCallbacks): void {
     this.connection.on("anotherUserJoined", (anotherUserId) => {
       console.log("Successfully joined>>>", anotherUserId);
-      WebRtc.setNewConnection(anotherUserId);
+      WebRtcHelper.setNewConnection(anotherUserId);
       onAnotherUserJoined(anotherUserId);
     });
 

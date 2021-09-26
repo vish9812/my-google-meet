@@ -1,8 +1,7 @@
-import React from "react";
-import CallActions from "../call-actions/call-actions";
-import ScreenShare from "../screen-share/screen-share";
+import { FC } from "react";
+import MeetingActions from "./meeting-actions";
 
-const MeetingInfo = () => {
+const MeetingInfo: FC = () => {
   return (
     <>
       <div className="g-top-left bg-light text-secondary w-25 d-flex align-items-center justify-content-between pl-2 pr-2">
@@ -24,21 +23,7 @@ const MeetingInfo = () => {
             <span className="material-icons">keyboard_arrow_down</span>
           </div>
         </div>
-        <CallActions></CallActions>
-        <div
-          className="bottom-right d-flex justify-content-center align-items-center mr-3"
-          style={{ height: "10vh" }}
-        >
-          <ScreenShare></ScreenShare>
-          <div
-            className="option-wrap cursor-pointer display-center"
-            style={{ height: "10vh", position: "relative" }}
-          >
-            <div className="option-icon">
-              <span className="material-icons">more_vert</span>
-            </div>
-          </div>
-        </div>
+        <MeetingActions></MeetingActions>
       </div>
     </>
   );

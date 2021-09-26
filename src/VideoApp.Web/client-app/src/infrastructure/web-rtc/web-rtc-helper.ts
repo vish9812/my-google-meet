@@ -1,8 +1,13 @@
+import MediaRtcHelper from "./media-rtc-helper";
 import SdpDataModel from "./sdp-data-model";
 
 export type MediaTrackHandler = (userId: string, stream: MediaStream) => void;
+export type SendSdpToServerFunc = (
+  message: SdpDataModel,
+  toUserId: string
+) => Promise<void>;
 
-export default class WebRtc {
+export default class WebRtcHelper {
   private static config: RTCConfiguration = {
     iceServers: [
       {
@@ -15,15 +20,15 @@ export default class WebRtc {
     iceCandidatePoolSize: 10,
   };
 
-  private static peers = new Set<string>();
-  private static peersConnections = new Map<string, RTCPeerConnection>();
+  protected static peersConnections = new Map<string, RTCPeerConnection>();
+  protected static rtpSenders = new Map<string, RTCRtpSender>();
   private static remoteVideoStreams = new Map<string, MediaStream>();
   private static remoteAudioStreams = new Map<string, MediaStream>();
+  private static sendSdpToServer: SendSdpToServerFunc;
 
-  static sendSdpToServer: (
-    message: SdpDataModel,
-    toUserId: string
-  ) => Promise<void>;
+  static setSendSdpToServer(sendSdpToServer: SendSdpToServerFunc) {
+    this.sendSdpToServer = sendSdpToServer;
+  }
 
   static async processSdpData(
     sdpData: SdpDataModel,
@@ -59,12 +64,14 @@ export default class WebRtc {
     // videoTrackHandler: MediaTrackHandler,
     // audioTrackHandler: MediaTrackHandler
   ): RTCPeerConnection {
+    console.log(`Setting new RTC Connection for user: ${userId}`);
+
     const connection = new RTCPeerConnection(this.config);
 
-    connection.onnegotiationneeded = async (event) =>
-      await this.setOffer(userId);
+    connection.onnegotiationneeded = async () => await this.setOffer(userId);
 
     connection.onicecandidate = (event) => {
+      console.log(`Handing icecandidate for user: ${userId}`);
       if (event.candidate && this.sendSdpToServer) {
         this.sendSdpToServer({ icecandidate: event.candidate }, userId);
       }
@@ -77,13 +84,24 @@ export default class WebRtc {
         // , videoTrackHandler, audioTrackHandler
       );
 
-    this.peers.add(userId);
     this.peersConnections.set(userId, connection);
+
+    MediaRtcHelper.updateMediaSenders();
 
     return connection;
   }
 
+  protected static connectionStatus(connection: RTCPeerConnection): boolean {
+    return (
+      connection &&
+      (connection.connectionState === "new" ||
+        connection.connectionState === "connecting" ||
+        connection.connectionState === "connected")
+    );
+  }
+
   private static async setOffer(userId: string): Promise<void> {
+    console.log(`Setting offer for user: ${userId}`);
     const connection = this.peersConnections.get(userId)!;
     const offer = await connection.createOffer();
     await connection.setLocalDescription(offer);
@@ -96,6 +114,7 @@ export default class WebRtc {
     // videoTrackHandler: MediaTrackHandler,
     // audioTrackHandler: MediaTrackHandler
   ): void {
+    console.log(`Handing track for user: ${userId}`);
     let videoStream = this.remoteVideoStreams.get(userId);
     let audioStream = this.remoteAudioStreams.get(userId);
 
@@ -107,6 +126,10 @@ export default class WebRtc {
       audioStream = new MediaStream();
       this.remoteAudioStreams.set(userId, audioStream);
     }
+
+    console.log(
+      `Got track for user: ${userId}, track kind: ${event.track.kind}`
+    );
 
     if (event.track.kind === "video") {
       videoStream.getVideoTracks().forEach((t) => videoStream!.removeTrack(t));

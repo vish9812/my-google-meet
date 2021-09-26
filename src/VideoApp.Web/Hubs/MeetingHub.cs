@@ -47,10 +47,12 @@ namespace VideoApp.Web.Hubs
 
         public async Task SdpProcess(string toUserId, SdpDataModel sdpData)
         {
+            var fromUserId = MeetingHubData.Connections[Context.ConnectionId].userId;
+            logger.LogInformation($"Sdp Processing>>> to: {toUserId}, from: {fromUserId}");
+
             var toConnection = MeetingHubData.Users[toUserId].connectionId;
             var toClient = Clients.Client(toConnection);
 
-            var fromUserId = toUserId;
             await toClient.SendAsync("sdpProcess", fromUserId, sdpData);
         }
 

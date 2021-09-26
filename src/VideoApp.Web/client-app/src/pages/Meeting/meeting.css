@@ -7,6 +7,17 @@
   position: relative;
 }
 
+.top-remote-video-show-wrap {
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+video {
+  border: 1px solid gray;
+  width: 300px;
+}
+
 .video-wrap {
   display: flex;
   flex-wrap: wrap;

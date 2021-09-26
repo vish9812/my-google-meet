@@ -2,11 +2,11 @@ import React, { FC } from "react";
 import Auth from "../../../auth/auth";
 import UserVideo from "./user-video";
 
-interface MeetingVideoProps {
+interface UsersVideosListProps {
   users: string[];
 }
 
-const MeetingVideo: FC<MeetingVideoProps> = ({ users }) => {
+const UsersVideosList: FC<UsersVideosListProps> = ({ users }) => {
   const loggedInUser = Auth.getUserId();
   const otherUsers = users.filter((u) => u !== loggedInUser);
 
@@ -31,4 +31,4 @@ const MeetingVideo: FC<MeetingVideoProps> = ({ users }) => {
   );
 };
 
-export default MeetingVideo;
+export default UsersVideosList;

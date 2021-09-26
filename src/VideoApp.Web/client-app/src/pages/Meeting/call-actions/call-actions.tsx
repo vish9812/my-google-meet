@@ -1,20 +1,57 @@
-import React from "react";
+import { FC, useState } from "react";
+import WebRtcHelper from "../../../infrastructure/web-rtc/web-rtc-helper";
+import VideoState from "../../../utils/common/video-states";
 
-const CallActions = () => {
+interface CallActionsProps {
+  videoState: VideoState;
+  onVideoStateChange: (videoState: VideoState) => void;
+}
+
+const CallActions: FC<CallActionsProps> = ({
+  videoState,
+  onVideoStateChange,
+}) => {
+  const [isMute, setIsMute] = useState(true);
+  const [isCamOff, setIsCamOff] = useState(true);
+
+  const handleMicToggle = async () => {
+    // if (!WebRtc.isAudioEnabled()) {
+    //   await WebRtc.loadAudio();
+    // }
+    // WebRtc.toggleAudio(isMute);
+    // WebRtc.updateMediaSenders(isMute);
+    // setIsMute(!isMute);
+  };
+
+  const handleVideoToggle = () => {
+    const newVideoState =
+      videoState === VideoState.Camera ? VideoState.None : VideoState.Camera;
+    onVideoStateChange(newVideoState);
+    setIsCamOff(newVideoState === VideoState.None);
+  };
+
   return (
     <>
       <div
         className="bottom-middle d-flex justify-content-center align-items-center"
         style={{ height: "10vh" }}
       >
-        <div className="mic-toggle-wrap action-icon-style display-center mr-2 cursor-pointer">
-          <span className="material-icons">mic_off</span>
+        <div
+          className="mic-toggle-wrap action-icon-style display-center mr-2 cursor-pointer"
+          onClick={handleMicToggle}
+        >
+          <span className="material-icons">{isMute ? "mic_off" : "mic"}</span>
         </div>
         <div className="end-call-wrap action-icon-style display-center mr-2 cursor-pointer">
           <span className="material-icons text-danger">call</span>
         </div>
-        <div className="video-toggle-wrap action-icon-style display-center cursor-pointer">
-          <span className="material-icons">videocam_off</span>
+        <div
+          className="video-toggle-wrap action-icon-style display-center cursor-pointer"
+          onClick={handleVideoToggle}
+        >
+          <span className="material-icons">
+            {isCamOff ? "videocam_off" : "videocam"}
+          </span>
         </div>
       </div>
     </>
